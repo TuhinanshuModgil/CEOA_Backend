@@ -5,81 +5,116 @@ import { Course } from "../models/course.model.js";
 // console.log("this is dirname: ", dirname(__filename))
 // console.log("This is log:", __dirname)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// export const addCourse = async (req, res) => {
+//   try {
+//     // Form fields
+//     const {
+//       name,
+//       mode,
+//       courseCode,
+//       description,
+//       imageAlt,
+//       faculties,
+//       eligibility,
+//       startDate,
+//       endDate,
+//       programName,
+//       paymentInstructions,
+//       brocherLink,
+//       paymentLinks,
+//       status,
+//     } = req.body;
+//     console.log("reached here: ", name, courseCode);
+
+//     // Image file
+//     const imageFile = req.file;
+//     console.log("type of ", imageFile.path);
+//     // getting the absolute path to image
+//     const filePath = path.resolve(__dirname, "../../files", req.file.filename);
+
+//     // Read the file and convert to Base64
+//     const fileData = fs.readFileSync(filePath);
+//     const base64Image = fileData.toString("base64");
+//     const base64Prefix = `data:${req.file.mimetype};base64,${base64Image}`;
+//     console.log("this is image: ", base64Image.slice(10, 20));
+//     // deleting the image from the file ones its converted
+//     fs.unlinkSync(filePath);
+
+//     // Parse arrays from JSON strings
+//     const parsedFaculties = JSON.parse(faculties || "[]");
+//     const parsedEligibility = JSON.parse(eligibility || "[]");
+//     const pardedPaymentLinks = JSON.parse(paymentLinks || "[]");
+
+//     // Simulate saving to database
+//     const course = {
+//       name,
+//       mode,
+//       courseCode,
+//       description,
+//       image: {
+//         data: base64Prefix,
+//         contentType: req.file.mimetype,
+//       },
+//       imageAlt,
+//       faculties: parsedFaculties,
+//       eligibility: parsedEligibility,
+//       startDate,
+//       programName,
+//       endDate,
+//       paymentInstructions,
+//       paymentLinks: pardedPaymentLinks,
+//       brocherLink,
+//       status,
+//     };
+//     console.log("This is course: ", course);
+
+//     const newCourse = await Course.create(course);
+//     // Simulated response (replace with database save logic)
+//     res.status(201).json({
+//       message: "Course created successfully",
+//       course,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Error creating course", error });
+//   }
+// };
+
 export const addCourse = async (req, res) => {
   try {
-    // Form fields
-    const {
-      name,
-      mode,
-      courseCode,
-      description,
-      imageAlt,
-      faculties,
-      eligibility,
-      startDate,
-      endDate,
-      programName,
-      paymentInstructions,
-      brocherLink,
-      paymentLinks,
-      status,
-    } = req.body;
-    console.log("reached here: ", name, courseCode);
-
-    // Image file
-    const imageFile = req.file;
-    console.log("type of ", imageFile.path);
-    // getting the absolute path to image
+    const { body, file } = req;
     const filePath = path.resolve(__dirname, "../../files", req.file.filename);
 
-    // Read the file and convert to Base64
+//     // Read the file and convert to Base64
     const fileData = fs.readFileSync(filePath);
-    const base64Image = fileData.toString("base64");
+    const base64Image = fileData? fileData.toString("base64"): null
     const base64Prefix = `data:${req.file.mimetype};base64,${base64Image}`;
-    console.log("this is image: ", base64Image.slice(10, 20));
-    // deleting the image from the file ones its converted
+
+    // Convert the uploaded image to base64
+    // const base64Image = file
+    //   ? fs.readFileSync(file.path, { encoding: "base64" })
+    //   : null;
+
+    const courseData = {
+      ...body,
+      image: base64Image
+        ? { data: base64Prefix, contentType: file.mimetype }
+        : null,
+      faculties: JSON.parse(body.faculties),
+      eligibility: JSON.parse(body.eligibility),
+      paymentLinks: JSON.parse(body.paymentLinks),
+    };
+
+    const newCourse = new Course(courseData);
+    await newCourse.save();
     fs.unlinkSync(filePath);
 
-    // Parse arrays from JSON strings
-    const parsedFaculties = JSON.parse(faculties || "[]");
-    const parsedEligibility = JSON.parse(eligibility || "[]");
-    const pardedPaymentLinks = JSON.parse(paymentLinks || "[]");
-
-    // Simulate saving to database
-    const course = {
-      name,
-      mode,
-      courseCode,
-      description,
-      image: {
-        data: base64Prefix,
-        contentType: req.file.mimetype,
-      },
-      imageAlt,
-      faculties: parsedFaculties,
-      eligibility: parsedEligibility,
-      startDate,
-      programName,
-      endDate,
-      paymentInstructions,
-      paymentLinks: pardedPaymentLinks,
-      brocherLink,
-      status,
-    };
-    console.log("This is course: ", course);
-
-    const newCourse = await Course.create(course);
-    // Simulated response (replace with database save logic)
-    res.status(201).json({
-      message: "Course created successfully",
-      course,
-    });
+    res.status(201).json({ message: "Course added successfully", newCourse });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error creating course", error });
+    console.error("Error adding course:", error);
+    res.status(500).json({ message: "Failed to add course", error });
   }
 };
-
 export const getCourses = async (req, res) => {
   try {
     const programName = req.params.id;
@@ -111,5 +146,53 @@ export const getCourse = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error getting course", error });
+  }
+};
+
+// Edit an existing course
+export const editCourse = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { body, file } = req;
+    console.log("File:", file)
+    let base64Image = null 
+    let base64Prefix = null
+    if(file){
+      const filePath = path.resolve(__dirname, "../../files", req?.file?.filename);
+
+//     // Read the file and convert to Base64
+      const fileData = fs.readFileSync(filePath);
+      base64Image = fileData? fileData.toString("base64"): null
+      base64Prefix = `data:${req.file.mimetype};base64,${base64Image}`;
+    }
+    
+    // Convert the uploaded image to base64 if provided
+    // let base64Image = null;
+    // if (file) {
+    //   base64Image = fs.readFileSync(file.path, { encoding: "base64" });
+    // }
+
+    const updatedData = {
+      ...body,
+      image: base64Image
+        ? { data: base64Prefix, contentType: file.mimetype }
+        : undefined, // If no image uploaded, keep the existing one
+      faculties: JSON.parse(body.faculties),
+      eligibility: JSON.parse(body.eligibility),
+      paymentLinks: JSON.parse(body.paymentLinks),
+    };
+
+    const updatedCourse = await Course.findByIdAndUpdate(id, updatedData, {
+      new: true,
+    });
+
+    if (!updatedCourse) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    res.status(200).json({ message: "Course updated successfully", updatedCourse });
+  } catch (error) {
+    console.error("Error editing course:", error);
+    res.status(500).json({ message: "Failed to edit course", error });
   }
 };

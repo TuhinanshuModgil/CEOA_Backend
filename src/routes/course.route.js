@@ -1,6 +1,6 @@
 import {Router} from 'express'
 import { verifyJWTToken } from "../middlewares/auth.middleware.js";
-import { addCourse, getCourse, getCourses } from '../controllers/course.controller.js';
+import { addCourse, editCourse, getCourse, getCourses } from '../controllers/course.controller.js';
 import multer from 'multer';
 import path from 'node:path';
 const storage = multer.diskStorage({
@@ -17,6 +17,7 @@ const storage = multer.diskStorage({
 const router =  Router()
 
 router.route('/add').post(upload.single('image'), addCourse)
+router.route('/edit/:id').put(upload.single('image'), editCourse)
 router.route('/:id').get( getCourses)
 router.route('/single/:id').get( getCourse)
 
