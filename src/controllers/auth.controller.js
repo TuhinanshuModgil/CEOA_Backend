@@ -50,6 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     fullname,
+    admin: false,
   });
   const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
     user
@@ -134,4 +135,47 @@ const currentUser = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Current User", req.user));
 });
 
+// const registerAdminUser = asyncHandler(async (req, res) => {
+//   console.log("user req body", req.body);
+//   const { email, fullname, password } = req.body;
+//   // ------ TEST --------
+//   console.log(
+//     "Full name, email, username, password",
+//     email,
+//     fullname,
+//     password
+//   );
+//   if ([email, fullname, password].some((field) => field?.trim() === "")) {
+//     throw new ApiError(400, "All fields are required");
+//   }
+
+//   const existedUser = await User.findOne({
+//     $or: [{ fullname }, { email }],
+//   });
+
+//   if (existedUser) {
+//     throw new ApiError(409, "User with email or username already exists");
+//   }
+//   const user = await User.create({
+//     email,
+//     password,
+//     admin: true, 
+//     fullname,
+//   });
+//   const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
+//     user
+//   );
+//   const options = {
+//     httpOnly: true,
+//     secure: false,
+//   };
+//   return res
+//     .status(200)
+//     .cookie("accessToken", accessToken, options)
+//     .cookie("refreshToken", refreshToken, options)
+//     .json(new ApiResponse(200, "User registerd successfully", {message: "User registerd successfully"}));
+// });
+
+
 export { registerUser, loginUser, logoutUser, currentUser };
+

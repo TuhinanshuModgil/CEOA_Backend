@@ -10,6 +10,9 @@ const userSchema = new Schema({
             trim: true,
             index: true
     },
+    admin: {
+        type: Boolean, 
+    }, 
     email: {
         type: String,
         required: true,

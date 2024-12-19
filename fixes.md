@@ -1,0 +1,6 @@
+- Add user authentication to admin routes 
+- Error handeling for all scinerios 
+- Add the admin user and give special routes to admin user 
+- Create pages in frontend to delete the courses and programs
+- Program Name in Add course form should come from the existing program names
+- 

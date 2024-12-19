@@ -8,6 +8,7 @@ router.route("/register").post(registerUser)
 router.route("/login").post(loginUser)
 router.route("/logout").post(verifyJWTToken, logoutUser)
 router.route("/user").get(verifyJWTToken, currentUser)
+// router.route("/registerAdmin").get(verifyJWTToken, currentUser)
 
 
 export default router
