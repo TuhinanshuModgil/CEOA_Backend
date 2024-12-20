@@ -15,7 +15,7 @@ app.use(express.json({
 // the cross origin resource sharing package
 // the cors package can take in some options too in form of an object
 app.use(cors({
-    origin: ["http://localhost:5173", process.env.FRONTEND_URL],
+    origin: ["http://localhost:5173", process.env.FRONTEND_URL, "https://ceoa-iitrpr.vercel.app"],
     credentials: true
 }))
 
