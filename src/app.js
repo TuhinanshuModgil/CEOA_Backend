@@ -44,12 +44,12 @@ app.get('/', (req, res)=>{
 })
 
 import authRouter from '../src/routes/auth.route.js'
-import courseRouter from '../src/routes/course.route.js'
+// import courseRouter from '../src/routes/course.route.js'
 import programRouter from '../src/routes/program.route.js'
 import bodyParser from 'body-parser';
 // import multer from 'multer';
 app.use('/auth', authRouter )
-app.use('/course', courseRouter )
+// app.use('/course', courseRouter )
 app.use('/program', programRouter )
 
 export {app}
