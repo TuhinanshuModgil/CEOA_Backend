@@ -12,3 +12,5 @@ connectDB().then(()=>{
 .catch((err)=>{
     console.log("Error in connecting Database", err.message)
 })
+
+export default app

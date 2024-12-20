@@ -15,7 +15,7 @@ app.use(express.json({
 // the cross origin resource sharing package
 // the cors package can take in some options too in form of an object
 app.use(cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", process.env.FRONTEND_URL],
     credentials: true
 }))
 
