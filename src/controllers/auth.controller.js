@@ -57,7 +57,8 @@ const registerUser = asyncHandler(async (req, res) => {
   );
   const options = {
     httpOnly: true,
-    secure: false,
+    secure: true,
+    sameSite: 'None'
   };
   return res
     .status(200)
@@ -94,6 +95,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: true,
+    sameSite: 'None'
   };
 
   return res
@@ -121,6 +123,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: true,
+    sameSite: 'None'
   };
 
   // clear cookies from browesr
